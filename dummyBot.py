@@ -12,8 +12,13 @@ class dummyBot(BotAI):
 
         command_center = self.townhalls.random      #entre los centros de mando que tengamos
 
-        if command_center.is_idle and self.can_afford(UnitTypeId.SCV):
+        if command_center.is_idle and self.can_afford(UnitTypeId.SCV):      #se crean obreros siempre que se pueda
             command_center.train(UnitTypeId.SCV)
+
+        #mandar a un scout al empezar
+        if iteration==0:
+            scout = self.workers[0]
+            scout.attack(self.enemy_start_locations[0])
 
 
 run_game( 
