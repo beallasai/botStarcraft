@@ -16,11 +16,12 @@ class dummyBot(BotAI):
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - OWN STATS - - - - - - - - -')
         print('Minerals:',self.minerals, ' |  Gas:',self.vespene, ' |  Supply:',self.supply_used,'/',self.supply_cap)
-        print('Units:',self.units.amount, ' |  Structures:',self.structures.amount)
+        print('Total units:',totalUnits, ' |  Defeated units:',totalUnits-self.units.amount, ' |  Structures:',self.structures.amount)
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - ENEMY STATS - - - - - - - - -')
-        print('Units:',self.enemy_units.amount, 'Structures:',self.enemy_structures.amount)
-
+        print('Total units:',totalEnemyUnits, ' |  Defeated units:',totalEnemyUnits-self.enemy_units.amount, ' |  Structures:',self.enemy_structures.amount)
+        
+        
     
     async def on_step(self,iteration):
 
@@ -29,15 +30,25 @@ class dummyBot(BotAI):
 
         await self.distribute_workers()         #distribución de obreros para recolectar
 
-        await self.train_workers()              #creación de obreros
+        await self.train_workers(iteration)     #creación de obreros
 
         await self.initial_scout(iteration)     #scout inicial
 
 
-    async def train_workers(self):
+        global totalEnemyUnits                  #cuenta unidades enemigas totales
+        totalEnemyUnits = 0
+        for eunit in self.enemy_units:
+            totalEnemyUnits += 1
+
+    async def train_workers(self,iteration):
+        if iteration == 0:
+            global totalUnits
+            totalUnits = self.units.amount
+
         for command_center in self.structures(UnitTypeId.COMMANDCENTER).ready:
             if command_center.is_idle and self.can_afford(UnitTypeId.SCV):      #se crean obreros siempre que se pueda
                 command_center.train(UnitTypeId.SCV)
+                totalUnits += 1                                                 #cuenta unidades propias totales
 
     
     async def initial_scout(self, iteration):
