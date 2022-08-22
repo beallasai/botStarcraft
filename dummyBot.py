@@ -4,6 +4,7 @@ from sc2.data import Difficulty, Race, Result
 from sc2.main import run_game  
 from sc2.player import Bot, Computer  
 from sc2.position import Point2
+from sc2.unit import Unit
 from sc2.ids.unit_typeid import UnitTypeId
 
 
@@ -17,24 +18,36 @@ class dummyBot(BotAI):
         print(game_result, ' |  Total time:', self.time)
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - OWN STATS - - - - - - - - -')
-        print('Minerals:',self.minerals, ' |  Gas:',self.vespene, ' |  Supply:',self.supply_used,'/',self.supply_cap)
+        print('Minerals:',self.state.score.summary[8][1], ' |  Gas:',self.state.score.summary[9][1], ' |  Supply:',self.supply_used,'/',self.supply_cap)
         print('Total units:',totalWorkers, ' |  Defeated units:',totalWorkers-self.units.amount, ' |  Structures:',self.structures.amount)
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - ENEMY STATS - - - - - - - - -')
-        print('Total units:',totalEnemyUnits+12, ' |  Defeated units:',totalEnemyUnits-self.enemy_units.amount, ' |  Structures:',self.enemy_structures.amount)
+        print('Total units:',max(totalEnemyUnits), ' |  Defeated units:',max(totalEnemyUnits)-self.enemy_units.amount, ' |  Structures:',self.enemy_structures.amount)
+    
+    
+    async def on_start(self):
+
+        scout = self.workers[0]                         #scout inicial
+        scout.attack(self.enemy_start_locations[0])
+
+        global totalEnemyUnits 
+        totalEnemyUnits = []
+
+        global totalEnemyStructures
+        totalEnemyStructures = []
+
     
     async def on_step(self,iteration):
 
         print('iteration:',iteration)
         
-
         await self.distribute_workers()         #distribución de obreros para recolectar
 
         await self.train_workers(iteration)     #creación de obreros
 
-        await self.initial_scout(iteration)     #scout inicial
-
         await self.count_enemy_units()          #cuenta unidades enemigas totales
+
+        await self.count_enemy_structures()     #cuenta estructuras enemigas totales
 
 
     async def train_workers(self,iteration):
@@ -46,19 +59,17 @@ class dummyBot(BotAI):
             if command_center.is_idle and self.can_afford(UnitTypeId.SCV):      #se crean obreros siempre que se pueda
                 command_center.train(UnitTypeId.SCV)
                 totalWorkers += 1                                                 #cuenta trabajadores propios totales  
-                
-    
-    async def initial_scout(self, iteration):
-        if iteration == 0:                            #mandar a un scout al empezar
-            scout = self.workers[0]
-            scout.attack(self.enemy_start_locations[0])
             
     
     async def count_enemy_units(self):
-        global totalEnemyUnits                  
-        totalEnemyUnits = 0
-        for eunit in self.enemy_units:
-            totalEnemyUnits += 1
+        if self.enemy_units.amount:
+            totalEnemyUnits.append(self.enemy_units.amount)
+
+
+    async def count_enemy_structures(self):
+        if self.enemy_structures:
+            totalEnemyStructures.append(self.enemy_structures.amount)
+            
 
 
 run_game( 
