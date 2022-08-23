@@ -19,7 +19,7 @@ class dummyBot(BotAI):
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - OWN STATS - - - - - - - - -')
         print('Minerals:',self.state.score.summary[8][1], ' |  Gas:',self.state.score.summary[9][1], ' |  Supply:',self.supply_used,'/',self.supply_cap)
-        print('Total units:',totalWorkers+totalMarines, ' |  Defeated units:',totalWorkers+totalMarines-self.units.amount, ' |  Structures:',totalSD+totalRefinery+totalBarracks+1)
+        print('Total units:',totalWorkers+totalMarines, ' |  Defeated units:',totalWorkers+totalMarines-self.units.amount, ' |  Structures:',totalSD+totalRefinery+totalBarracks+self.structures(UnitTypeId.COMMANDCENTER).amount)
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - ENEMY STATS - - - - - - - - -')
         print('Total units:',max(totalEnemyUnits), ' |  Defeated units:',max(totalEnemyUnits)-self.enemy_units.amount, ' |  Structures:',max(totalEnemyStructures))

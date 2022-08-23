@@ -22,7 +22,7 @@ class dummyBot(BotAI):
         print('Total units:',totalWorkers, ' |  Defeated units:',totalWorkers-self.units.amount, ' |  Structures:',self.structures.amount)
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - - ENEMY STATS - - - - - - - - -')
-        print('Total units:',max(totalEnemyUnits), ' |  Defeated units:',max(totalEnemyUnits)-self.enemy_units.amount, ' |  Structures:',self.enemy_structures.amount)
+        print('Total units:',max(totalEnemyUnits), ' |  Defeated units:',max(totalEnemyUnits)-self.enemy_units.amount, ' |  Structures:',max(totalEnemyStructures))
     
     
     async def on_start(self):
