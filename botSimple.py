@@ -10,7 +10,7 @@ from sc2.ids.unit_typeid import UnitTypeId
 import random
 import time
 
-class dummyBot(BotAI):
+class simpleBot(BotAI):
 
     def on_end(self, game_result):
         print('- - - - - - - - - - - - - - - - - - - - - - -')
@@ -59,6 +59,8 @@ class dummyBot(BotAI):
 
         await self.train_marines(iteration)              #creación marines
 
+        await self.attack()                              #ataque
+
 
     
     async def train_workers(self,iteration):
@@ -84,6 +86,9 @@ class dummyBot(BotAI):
     
     async def expand(self):
         if self.structures(UnitTypeId.COMMANDCENTER).amount < 2 and self.can_afford(UnitTypeId.COMMANDCENTER):
+            await self.expand_now()
+
+        elif self.structures(UnitTypeId.COMMANDCENTER).amount < 3 and self.supply_used > 50 and self.can_afford(UnitTypeId.COMMANDCENTER):
             await self.expand_now()
 
 
@@ -129,7 +134,14 @@ class dummyBot(BotAI):
             global totalMarines
             totalMarines = self.units(UnitTypeId.MARINE).amount
 
-        elif self.units(UnitTypeId.MARINE).amount > 25:
+        for barrack in self.structures(UnitTypeId.BARRACKS).ready:
+            if self.units(UnitTypeId.MARINE).amount < 25 * self.structures(UnitTypeId.COMMANDCENTER).ready.amount and self.can_afford(UnitTypeId.MARINE) and not self.already_pending(UnitTypeId.MARINE):
+                barrack.train(UnitTypeId.MARINE)
+                totalMarines += 1
+
+
+    async def attack(self):
+        if self.units(UnitTypeId.MARINE).amount >= 25:
             for marine in self.units(UnitTypeId.MARINE).idle:
 
                 if self.enemy_units:
@@ -139,19 +151,13 @@ class dummyBot(BotAI):
                     marine.attack(random.choice(self.enemy_structures))
 
                 else:
-                    marine.attack(self.enemy_start_locations[0])
-
-        for barrack in self.structures(UnitTypeId.BARRACKS).ready:
-            if self.units(UnitTypeId.MARINE).amount <= 20 * self.structures(UnitTypeId.COMMANDCENTER).ready.amount and self.can_afford(UnitTypeId.MARINE) and not self.already_pending(UnitTypeId.MARINE):
-                barrack.train(UnitTypeId.MARINE)
-                totalMarines += 1
-
+                    marine.attack(self.enemy_start_locations[0].position)
 
 
 
 run_game( 
     maps.get("LightshadeAIE"),                 #mapa en el que se juega
-    [Bot(Race.Terran, dummyBot()),                    #raza de nuestro bot
+    [Bot(Race.Terran, simpleBot()),                    #raza de nuestro bot
      Computer(Race.Random, Difficulty.VeryEasy)],       #raza del enemigo y dificultad
      realtime=False                                #velocidad juego
 )
