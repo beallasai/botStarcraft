@@ -18,6 +18,60 @@ class simpleBot(BotAI):
 
     def on_end(self, game_result):
 
+        inputs = [totalWorkers, totalBarracks, totalMarines]
+        def fitness_func(solution, solution_idx):
+            T_max = 3600
+            T_partida = self.time
+            T_puntos = T_max - T_partida
+            out = numpy.sum(numpy.abs(inputs-solution))
+
+            fitness = T_puntos + 100/out
+
+            if T_partida > T_max:
+                print("Tiempo máximo de partida superado, resultados no concluyentes")
+                fitness = -99999
+
+            else:
+                if game_result == Result.Victory:
+                    fitness
+
+                else:
+                    fitness = -fitness
+
+            return fitness
+
+        ga_instance = pygad.GA(num_generations=1000,
+            sol_per_pop=100,
+            num_parents_mating=10,
+            num_genes=3,
+            fitness_func=fitness_func,
+            gene_type = int,
+            init_range_low = 1,
+            init_range_high = 75,
+            random_mutation_min_val=1.0,
+            random_mutation_max_val=10.0,
+            mutation_by_replacement=True,
+            save_best_solutions=True,
+            save_solutions=True)
+
+        ga_instance.run()
+        ga_instance.plot_fitness()
+        ga_instance.plot_genes()
+        ga_instance.plot_new_solution_rate()
+        solution, solution_fitness, solution_idx = ga_instance.best_solution()
+
+        print('- - - - - - - - - - - - - - - - - - - - - - -')
+        print('- - - - - - - BEST SOLUTION AFTER - - - - - -')
+        print('Generation 1  ',ga_instance.best_solutions[0])
+        print('Generation 345',ga_instance.best_solutions[344])
+        print('Generation 981',ga_instance.best_solutions[980])
+        print('- - - - - - - - - - - - - - - - - - - - - - -')
+        print('- - - - - - - - BEST SOLUTION - - - - - - - -')
+        print("Solution: {solution}".format(solution = solution))
+        print("Fitness value: {solution_fitness}".format(solution_fitness = solution_fitness))
+        print("Solution index: {solution_idx}".format(solution_idx = solution_idx))
+        
+
         print('- - - - - - - - - - - - - - - - - - - - - - -')
         print('- - - - - - - - GAME STATS - - - - - - - - - -')
         print(game_result, ' |  Total time:', self.time)
@@ -74,7 +128,7 @@ class simpleBot(BotAI):
             totalWorkers = self.units.amount
 
         for command_center in self.structures(UnitTypeId.COMMANDCENTER).ready: 
-            if self.units(UnitTypeId.SCV).amount < 66 and command_center.is_idle and self.can_afford(UnitTypeId.SCV):
+            if self.units(UnitTypeId.SCV).amount < 22 * self.structures(UnitTypeId.COMMANDCENTER).amount and command_center.is_idle and self.can_afford(UnitTypeId.SCV):
                 command_center.train(UnitTypeId.SCV)
                 totalWorkers += 1                                                 #cuenta trabajadores propios totales  
             
@@ -129,7 +183,7 @@ class simpleBot(BotAI):
 
         elif self.structures(UnitTypeId.SUPPLYDEPOT):
             for command_center in self.structures(UnitTypeId.COMMANDCENTER):
-                if self.structures(UnitTypeId.BARRACKS).amount < 6 and self.can_afford(UnitTypeId.BARRACKS) and self.already_pending(UnitTypeId.BARRACKS) < 2:
+                if self.structures(UnitTypeId.BARRACKS).amount < 3 * self.structures(UnitTypeId.COMMANDCENTER).ready.amount and self.can_afford(UnitTypeId.BARRACKS) and self.already_pending(UnitTypeId.BARRACKS) < 2:
                     await self.build(UnitTypeId.BARRACKS, near=command_center.position.towards(self.game_info.map_center, 15))
                     totalBarracks += 1
         
@@ -140,7 +194,7 @@ class simpleBot(BotAI):
             totalMarines = self.units(UnitTypeId.MARINE).amount
 
         for barrack in self.structures(UnitTypeId.BARRACKS).ready:
-            if self.units(UnitTypeId.MARINE).amount < 61 and self.can_afford(UnitTypeId.MARINE) and not self.already_pending(UnitTypeId.MARINE):
+            if self.units(UnitTypeId.MARINE).amount < 25 * self.structures(UnitTypeId.COMMANDCENTER).ready.amount and self.can_afford(UnitTypeId.MARINE) and not self.already_pending(UnitTypeId.MARINE):
                 barrack.train(UnitTypeId.MARINE)
                 totalMarines += 1
 
