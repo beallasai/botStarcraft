@@ -18,7 +18,7 @@ class simpleBot(BotAI):
 
     def on_end(self, game_result):
 
-        inputs = [totalWorkers, totalBarracks, totalMarines]
+        inputs = [totalWorkers, totalBarracks, totalMarines, 25]
         def fitness_func(solution, solution_idx):
             T_max = 3600
             T_partida = self.time
@@ -43,16 +43,17 @@ class simpleBot(BotAI):
         ga_instance = pygad.GA(num_generations=1000,
             sol_per_pop=100,
             num_parents_mating=10,
-            num_genes=3,
+            num_genes=4,
             fitness_func=fitness_func,
             gene_type = int,
             init_range_low = 1,
             init_range_high = 75,
-            random_mutation_min_val=1.0,
-            random_mutation_max_val=10.0,
-            mutation_by_replacement=True,
-            save_best_solutions=True,
-            save_solutions=True)
+            random_mutation_min_val = 1.0,
+            random_mutation_max_val = 10.0,
+            mutation_by_replacement = True,
+            save_best_solutions = True,
+            save_solutions = True,
+            suppress_warnings = True)
 
         ga_instance.run()
         ga_instance.plot_fitness()

@@ -74,7 +74,7 @@ class simpleBot(BotAI):
             totalWorkers = self.units.amount
 
         for command_center in self.structures(UnitTypeId.COMMANDCENTER).ready: 
-            if self.units(UnitTypeId.SCV).amount < 66 and command_center.is_idle and self.can_afford(UnitTypeId.SCV):
+            if self.units(UnitTypeId.SCV).amount < 61 and command_center.is_idle and self.can_afford(UnitTypeId.SCV):
                 command_center.train(UnitTypeId.SCV)
                 totalWorkers += 1                                                 #cuenta trabajadores propios totales  
             
@@ -129,7 +129,7 @@ class simpleBot(BotAI):
 
         elif self.structures(UnitTypeId.SUPPLYDEPOT):
             for command_center in self.structures(UnitTypeId.COMMANDCENTER):
-                if self.structures(UnitTypeId.BARRACKS).amount < 6 and self.can_afford(UnitTypeId.BARRACKS) and self.already_pending(UnitTypeId.BARRACKS) < 2:
+                if self.structures(UnitTypeId.BARRACKS).amount < 9 and self.can_afford(UnitTypeId.BARRACKS) and self.already_pending(UnitTypeId.BARRACKS) < 2:
                     await self.build(UnitTypeId.BARRACKS, near=command_center.position.towards(self.game_info.map_center, 15))
                     totalBarracks += 1
         
@@ -140,13 +140,13 @@ class simpleBot(BotAI):
             totalMarines = self.units(UnitTypeId.MARINE).amount
 
         for barrack in self.structures(UnitTypeId.BARRACKS).ready:
-            if self.units(UnitTypeId.MARINE).amount < 61 and self.can_afford(UnitTypeId.MARINE) and not self.already_pending(UnitTypeId.MARINE):
+            if self.units(UnitTypeId.MARINE).amount < 58 and self.can_afford(UnitTypeId.MARINE) and not self.already_pending(UnitTypeId.MARINE):
                 barrack.train(UnitTypeId.MARINE)
                 totalMarines += 1
 
 
     async def attack(self):
-        if self.units(UnitTypeId.MARINE).amount >= 25:
+        if self.units(UnitTypeId.MARINE).amount >= 31:
             for marine in self.units(UnitTypeId.MARINE).idle:
 
                 if self.enemy_units:
