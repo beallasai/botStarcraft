@@ -47,7 +47,7 @@ class simpleBot(BotAI):
             fitness_func=fitness_func,
             gene_type = int,
             init_range_low = 1,
-            init_range_high = 75,
+            init_range_high = 85,
             random_mutation_min_val = 1.0,
             random_mutation_max_val = 10.0,
             mutation_by_replacement = True,
