@@ -162,7 +162,7 @@ class simpleBot(BotAI):
 run_game( 
     maps.get("LightshadeAIE"),                 #mapa en el que se juega
     [Bot(Race.Terran, simpleBot()),                    #raza de nuestro bot
-     Computer(Race.Random, Difficulty.Medium)],       #raza del enemigo y dificultad
+     Computer(Race.Random, Difficulty.VeryEasy)],       #raza del enemigo y dificultad
      realtime=False                                #velocidad juego
 )
 
