@@ -31,4 +31,4 @@ python python3 bot_script.py
 ```
 Make sure the *bot_script.py* file is the name of one of the given bots in the project with the settings you want to test.
 
-## Run your favourite bot and check how it reacts in battles against different enemies and difficulties!
+## Run your favourite bot and check how it reacts in battle against different enemies and difficulties!
